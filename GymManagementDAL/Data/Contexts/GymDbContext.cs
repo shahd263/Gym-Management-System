@@ -13,7 +13,7 @@ namespace GymManagementDAL.Data.Contexts
     {
 
 
-        GymDbContext(DbContextOptions<GymDbContext> options) :base(options) { }
+        public GymDbContext(DbContextOptions<GymDbContext> options) :base(options) { }
 
         // h7ot el Configuration fy mkan loose aktr (gwa el appsettings)
 

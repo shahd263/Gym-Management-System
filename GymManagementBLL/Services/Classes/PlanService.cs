@@ -100,7 +100,7 @@ namespace GymManagementBLL.Services.Classes
         {
             var PlanRepo = _unitOfWork.GetRepository<Plan>();
             var plan = PlanRepo.GetById(PlanId);
-            if (plan is null || HasActiveMemberPlans(PlanId) return false;
+            if (plan is null || HasActiveMemberPlans(PlanId) )return false;
             try
             {
                 if (plan.IsActive)
