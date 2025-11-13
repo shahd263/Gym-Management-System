@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementBLL.Services.Classes
 {
-    internal class MemberService : IMemberService
+    public class MemberService : IMemberService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -105,8 +105,11 @@ namespace GymManagementBLL.Services.Classes
         {
             try
             {
-                if (EmailExists(UpdatedMember.Email) || PhoneExists(UpdatedMember.Phone)) return false;
 
+                var EmailExists = _unitOfWork.GetRepository<Member>().GetAll(X => X.Email == UpdatedMember.Email && X.Id != Id);
+                var PhoneExists = _unitOfWork.GetRepository<Member>().GetAll(X => X.Phone == UpdatedMember.Phone && X.Id != Id);
+
+                if(EmailExists.Any() || PhoneExists.Any()) return false;
                 var member = _unitOfWork.GetRepository<Member>().GetById(Id);
                 if (member is null) return false;
 
@@ -128,9 +131,12 @@ namespace GymManagementBLL.Services.Classes
             var member = MemberRepo.GetById(MemberId);
             if (member is null) return false;
 
-            var ActiveBookings = _unitOfWork.GetRepository<SessionBooking>()
-                .GetAll(X => X.MemberId == MemberId && X.Session.StartDate > DateTime.Now).Any();
-            if (ActiveBookings) return false;
+            var SessionIds = _unitOfWork.GetRepository<SessionBooking>()
+                .GetAll(X => X.MemberId == MemberId).Select(X=>X.SessionId);
+            //This because navigational Property Does not Load Data so if we try to get data direct Exception will be trown
+            var HasFutureSessions = _unitOfWork.SessionRepository.GetAll(X => SessionIds.Contains(X.Id) && X.StartDate > DateTime.Now).Any();
+
+            if (HasFutureSessions) return false;
 
             var MemberPlanRepo = _unitOfWork.GetRepository<MemberPlan>();
 
