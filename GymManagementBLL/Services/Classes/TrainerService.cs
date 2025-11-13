@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementBLL.Services.Classes
 {
-    internal class TrainerService : ITrainerService
+    public class TrainerService : ITrainerService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -29,7 +29,7 @@ namespace GymManagementBLL.Services.Classes
             {
                 if (EmailExists(Trainer.Email) || PhoneExists(Trainer.Phone)) return false;
 
-                var trainer = _mapper.Map<Trainer>(CreatedTrainer);
+                var trainer = _mapper.Map<Trainer>(Trainer);
 
                 _unitOfWork.GetRepository<Trainer>().Add(trainer);
                 return _unitOfWork.SaveChanges() > 0;
@@ -73,12 +73,18 @@ namespace GymManagementBLL.Services.Classes
             try
             {
                 var TrainerRepo = _unitOfWork.GetRepository<Trainer>();
+                
+                
+                var EmailExists = TrainerRepo.GetAll(X => X.Email == UpdatedTrainer.Email && X.Id != Id).Any();
+                var PhoneExists = TrainerRepo.GetAll(X => X.Phone == UpdatedTrainer.Phone && X.Id != Id).Any();
+
+                if(EmailExists || PhoneExists) return false;
+
                 var trainer = TrainerRepo.GetById(Id);
-                if (EmailExists(UpdatedTrainer.Email) || PhoneExists(UpdatedTrainer.Phone)) return false;
+                if (trainer is null) return false;
 
                 _mapper.Map(UpdatedTrainer, trainer);
-
-                TrainerRepo?.Update(trainer);
+                TrainerRepo.Update(trainer);
                 return _unitOfWork.SaveChanges() > 0;
             }
             catch
@@ -99,7 +105,7 @@ namespace GymManagementBLL.Services.Classes
             if (FutureSessions) return false;
 
             TrainerRepo.Delete(trainer);
-            return _unitOfWork?.SaveChanges() > 0;
+            return _unitOfWork.SaveChanges() > 0;
             
 
 
