@@ -3,8 +3,10 @@ using GymManagementBLL.Services.Interfaces;
 using GymManagementBLL.ViewModels.PlanViewModels;
 using GymManagementDAL.Entities;
 using GymManagementDAL.Repositories.Interfaces;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,7 +14,7 @@ using System.Xml.Linq;
 
 namespace GymManagementBLL.Services.Classes
 {
-    internal class PlanService : IPlanService
+    public class PlanService : IPlanService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -58,14 +60,18 @@ namespace GymManagementBLL.Services.Classes
         public EditPlanViewModel? GetEditPlanViewModel(int PlanId)
         {
             var plan = _unitOfWork.GetRepository<Plan>().GetById(PlanId);
-            if (plan == null || !plan.IsActive || HasActiveMemberPlans(PlanId)) return null;
+            if (plan == null || plan.IsActive || (HasActiveMemberPlans(PlanId) )) return null;
             return _mapper.Map<EditPlanViewModel>(plan);
 
         }
 
         private bool HasActiveMemberPlans(int PlanId)
         {
-            return _unitOfWork.GetRepository<MemberPlan>().GetAll(X=> X.Id == PlanId && X.Status == "Active").Any();
+           
+
+            return _unitOfWork.GetRepository<MemberPlan>().GetAll(X=> X.PlanId == PlanId && X.Status == "Active").Any();
+            
+            
         }
         public PlanViewModel? GetPlanDetails(int PlanId)
         {
