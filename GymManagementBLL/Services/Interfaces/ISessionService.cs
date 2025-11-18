@@ -1,6 +1,5 @@
 ﻿using GymManagementBLL.ViewModels.SessionViewModels;
 using GymManagementDAL.Entities;
-using GymManagementSystemBLL.ViewModels.SessionViewModels;
 using Microsoft.EntityFrameworkCore.Storage;
 using System;
 using System.Collections.Generic;
@@ -10,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementBLL.Services.Interfaces
 {
-    internal interface ISessionService
+    public interface ISessionService
     {
         IEnumerable<SessionViewModel> GetAllSessions();
 
@@ -21,6 +20,10 @@ namespace GymManagementBLL.Services.Interfaces
         bool UpdateSession(int SessionId, UpdateSessionViewModel UpdatedSession);
 
         bool RemoveSession(int SessionId);
+
+        IEnumerable<TrainerSelectViewModel> GetTrainers();
+        IEnumerable<CategorySelectViewModel> GetCategories();
+
 
     }
 }

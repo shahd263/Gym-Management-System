@@ -3,7 +3,6 @@ using GymManagementBLL.Services.Interfaces;
 using GymManagementBLL.ViewModels.SessionViewModels;
 using GymManagementDAL.Entities;
 using GymManagementDAL.Repositories.Interfaces;
-using GymManagementSystemBLL.ViewModels.SessionViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,7 @@ using System.Threading.Tasks;
 
 namespace GymManagementBLL.Services.Classes
 {
-    internal class SessionService : ISessionService
+    public class SessionService : ISessionService
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
@@ -115,6 +114,18 @@ namespace GymManagementBLL.Services.Classes
             
         }
 
+        public IEnumerable<TrainerSelectViewModel> GetTrainers()
+        {
+            var Trainers = _unitOfWork.GetRepository<Trainer>().GetAll();
+            return _mapper.Map<IEnumerable<TrainerSelectViewModel>>(Trainers);
+        }
+
+        public IEnumerable<CategorySelectViewModel> GetCategories()
+        {
+            var Categories = _unitOfWork.GetRepository<Category>().GetAll();
+            return _mapper.Map<IEnumerable<CategorySelectViewModel>>(Categories);
+        }
+
 
         #region Helper Methods
         private bool TrainerExists(int TrainerId)
@@ -148,12 +159,14 @@ namespace GymManagementBLL.Services.Classes
             if (Session == null) return false;
             
             if (Session.StartDate <= DateTime.Now && Session.EndDate >= DateTime.Now) return false;
-            if (Session.StartDate > DateTime.Now) return false;
             var hasActiveBookings = _unitOfWork.SessionRepository.GetCountOfBookedSlots(Session.Id) > 0;
             if (hasActiveBookings) return false;
             return true;
 
         }
+
+        
+
 
         #endregion
     }
