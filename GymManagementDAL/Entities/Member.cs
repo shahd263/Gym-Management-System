@@ -9,7 +9,7 @@ namespace GymManagementDAL.Entities
     public class Member :GymUser
     {
         //JoinDate
-        public string? Photo { get; set; }
+        public string Photo { get; set; } = null!;
         public HealthRecord HealthRecord { get; set; }
 
         public ICollection<MemberPlan> MemberPlans { get; set; }

@@ -1,4 +1,5 @@
 ﻿using GymManagementDAL.Entities.Enums;
+using Microsoft.AspNetCore.Http;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -10,6 +11,11 @@ namespace GymManagementBLL.ViewModels.MemeberViewModels
 {
     public class CreateMemberViewModel
     {
+        [Required(ErrorMessage = "Photo Is Required")]
+        [Display(Name = "Profile Photo")]
+        public IFormFile PhotoFile { get; set; } = null!;
+
+
         [Required(ErrorMessage = "Name Is Required")]
         [StringLength(50 , MinimumLength =2 , ErrorMessage = "Name Must Be From 2 to 50 Characters") ]
         [RegularExpression(@"^[a-zA-Z\s]+$" , ErrorMessage = "Name Can Contain Only  Letters And Spaces")]
